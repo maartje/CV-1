@@ -1,0 +1,44 @@
+TODO: albedo should be inbetween 0 and 1, 
+we have a max value of 1.0382 for 5 images and  1.2167 for 25 images
+
+TODO:
+p = zeros(size(normals));
+q = zeros(size(normals));
+SE = zeros(size(normals));
+
+shouldn't it be:
+[h, w, ~] = size(normals) 
+p = zeros(h,w,1);
+q = zeros((h,w,1);
+SE = zeros(h,w,1);
+
+TODO 
+max SE is 15.0156 >> 0
+
+TODO
+construct surface row vs column seem to have opposite sign?!
+
+========= 1.1 ============================================
+
+Expect to see:
+circle with four parts, light,dark,light,dark
+different ...
+
+TODO: Actual see ...
+
+========= 1.2 ============================================
+
+minimal 3 images,
+but not always enough
+
+why: g = V*i
+
+V.g = i => [n * 3]*[3*1] = [n x 1]
+solvable if n = 3 and full V has full rank
+
+TODO: experiment with more images ...
+
+========= 1.3 ============================================
+
+========= 2.1 ===========================================
+
