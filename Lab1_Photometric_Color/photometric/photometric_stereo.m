@@ -27,7 +27,6 @@ disp('Integrability checking')
 threshold = 0.005;
 SE(SE <= threshold) = NaN; % for good visualization
 fprintf('Number of outliers: %d\n\n', sum(sum(SE > threshold)));
-fprintf('Number of points: %d\n\n', numel(SE));
 fprintf('Percentage of outliers: %d\n\n', sum(sum(SE > threshold))/numel(SE));
 
 
