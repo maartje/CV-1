@@ -1,0 +1,32 @@
+Grey5
+Number of outliers: 5130
+
+Number of points: 262144
+
+Percentage of outliers: 1.956940e-02
+
+
+Grey5_No_Trick
+
+Number of outliers: 2175
+
+Number of points: 262144
+
+Percentage of outliers: 8.296967e-03
+
+
+Grey25
+Number of outliers: 4175
+
+Number of points: 262144
+
+Percentage of outliers: 1.592636e-02
+
+
+Grey25_no_trick
+
+Number of outliers: 1960
+
+Number of points: 262144
+
+Percentage of outliers: 7.476807e-03
