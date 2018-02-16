@@ -39,10 +39,10 @@ q(isnan(q)) = 0;
 % approximate second derivate by neighbor difference
 % and compute the Squared Errors SE of the 2 second derivatives SE
 
-ddxdy = diff(p,1,2);
-ddxdy(:, end+1, :) = ddxdy(:, end, :); % fix dim, add derivative for right edge
-ddydx = diff(q,1,1);
-ddydx(end + 1, :, :) = ddydx(end, :, :); % fix dim, add derivative for bottom edge
+ddydx = diff(q,1,2);
+ddydx(:, end+1, :) = ddydx(:, end, :); % fix dim, add derivative for rightmost column
+ddxdy = diff(p,1,1);
+ddxdy(end + 1, :, :) = ddxdy(end, :, :); % fix dim, add derivative for bottom row
 
 SE = (ddxdy - ddydx).^2;
 
