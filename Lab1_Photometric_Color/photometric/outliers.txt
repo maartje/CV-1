@@ -1,0 +1,42 @@
+*** Grey5
+nr of images: 5
+Number of outliers: 3351
+Percentage of outliers: 1.278305e-02
+
+
+*** Grey5_No_Trick
+nr of images: 5
+Number of outliers: 1792
+Percentage of outliers: 6.835938e-03
+
+
+*** Grey25
+nr of images: 25
+Number of outliers: 2463
+Percentage of outliers: 9.395599e-03
+
+
+*** Grey25_no_trick
+nr of images: 25
+Number of outliers: 1960
+Percentage of outliers: 7.476807e-03
+
+*** Face
+nr of images: 64
+Number of outliers: 14740
+Percentage of outliers: 4.569692e-01
+
+*** Face_no_trick
+nr of images: 64
+Number of outliers: 1067
+Percentage of outliers: 3.307912e-02
+
+*** Monkey
+nr of images: 121
+Number of outliers: 9994
+Percentage of outliers: 3.812408e-02
+
+*** Monkey_no_trick
+nr of images: 121
+Number of outliers: 7380
+Percentage of outliers: 2.815247e-02
