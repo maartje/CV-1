@@ -40,7 +40,7 @@ switch path_type
         height_map_col = construct_surface_column_path(p, q);        
         height_map_row = construct_surface_row_path(p, q);
         
-        height_map = 0.5 * (height_map_col - height_map_row);
+        height_map = 0.5 * (height_map_col + height_map_row);
         
         % =================================================================
 end
@@ -82,5 +82,5 @@ height_map = zeros(h, w);
 
 height_map(1, 2:end) = cumsum(p(1, 2:end, 1));
 height_map(2:end, :) = cumsum(q(2:end, :, 1)) + height_map(1, :);
-
+height_map = -1 .* height_map;
 end

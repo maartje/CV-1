@@ -7,8 +7,9 @@ disp('Part 1: Photometric Stereo')
 % obtain many images in a fixed view under different illumination
 disp('Loading images...')
 % image_dir = './photometrics_images/SphereGray5/';   
-image_dir = './photometrics_images/MonkeyGray/';
+% image_dir = './photometrics_images/MonkeyGray/';
 % image_dir = './photometrics_images/SphereGray25/';   
+image_dir = './photometrics_images/SphereColor/';   
 %image_ext = '*.png';
 
 [image_stack, scriptV] = load_syn_images(image_dir);
@@ -31,7 +32,7 @@ fprintf('Percentage of outliers: %d\n\n', sum(sum(SE > threshold))/numel(SE));
 
 
 %% compute the surface height
-height_map = construct_surface( p, q, 'average');
+height_map = construct_surface( p, q, 'row');
 
 %% Display
 show_results(albedo, normals, SE);
@@ -39,11 +40,12 @@ show_model(albedo, height_map);
 
 
 %% Face
-[image_stack, scriptV] = load_face_images('./photometrics_images/yaleB02/');
+% [image_stack, scriptV] = load_face_images('./photometrics_images/yaleB02/');
+[image_stack, scriptV] = load_face_images('./photometrics_images/yaleB02_without_problematic/');
 [h, w, n] = size(image_stack);
 fprintf('Finish loading %d images.\n\n', n);
 disp('Computing surface albedo and normal map...')
-[albedo, normals] = estimate_alb_nrm(image_stack, scriptV, true);
+[albedo, normals] = estimate_alb_nrm(image_stack, scriptV, false);
 
 %% integrability check: is (dp / dy  -  dq / dx) ^ 2 small everywhere?
 disp('Integrability checking')
@@ -55,7 +57,7 @@ fprintf('Number of outliers: %d\n\n', sum(sum(SE > threshold)));
 fprintf('Percentage of outliers: %d\n\n', sum(sum(SE > threshold))/numel(SE));
 
 %% compute the surface height
-height_map = construct_surface( p, q );
+height_map = construct_surface( p, q , 'column');
 
 show_results(albedo, normals, SE);
 show_model(albedo, height_map);
