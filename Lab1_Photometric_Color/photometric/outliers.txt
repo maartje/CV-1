@@ -40,3 +40,7 @@ Percentage of outliers: 3.812408e-02
 nr of images: 121
 Number of outliers: 7380
 Percentage of outliers: 2.815247e-02
+
+*** SpereColor no fix
+Number of outliers: 3053
+Percentage of outliers: 1.164627e-02

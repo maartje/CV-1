@@ -28,6 +28,8 @@ for x = 1:h
         % stack image values into a vector i
         i = reshape(image_stack(x, y, :), source_count, 1); 
         
+        i(isnan(i)) = 0; %Fix missing channel problem
+        
         % construct the diagonal matrix script I
         I = diag(i);
         
@@ -39,7 +41,7 @@ for x = 1:h
         end
         
         %   albedo at this point is |g|
-        albedo(x, y, 1) = norm(g);
+        albedo(x, y, 1) = min(norm(g), 1);
         
         % assert(0 <= albedo & albedo <= 1, "albedo should be inbetween 0 and 1")
         % FIXME: max albedo is '1.0382' 
@@ -48,7 +50,7 @@ for x = 1:h
         if albedo(x, y, 1) == 0
             normal(x, y, :) = [0, 0, 0];
         else
-            normal(x, y, :) = g / albedo(x, y, 1);
+            normal(x, y, :) = g / norm(g);
         end
     end
 end
