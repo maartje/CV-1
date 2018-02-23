@@ -1,0 +1,4 @@
+- convolution is associative, i.e. we can first combine filters
+- if filter symetric, then they are the same (rotate by 180 degrees)
+- correlation is used to see how similar things are
+
