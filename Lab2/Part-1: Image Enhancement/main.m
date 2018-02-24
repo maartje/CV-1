@@ -18,6 +18,24 @@ show_denoised_images('images/image1_gaussian.jpg', ["box", "median"], [3,5,7]);
 show_denoised_images('images/image1_saltpepper.jpg', ["gaussian"], [0.5,1,2]);
 show_denoised_images('images/image1_gaussian.jpg', ["gaussian"], [0.5,1,2]);
 
+image2 = imread('images/image2.jpg');
+compute_gradient(image2);
+
+[Gx, Gy] = imgradientxy(image2);
+[Gmag, Gdir] = imgradient(Gx, Gy);
+[Gx, Gy, Gmag, Gdir] = compute_gradient(image2);
+
+figure;
+subplot(2,2,1);
+imshow(Gx, []), title('Directional gradient: X axis');
+subplot(2,2,2);
+imshow(Gy, []), title('Directional gradient: Y axis');
+subplot(2,2,3);
+imshow(Gmag, []), title('Gradient magnitude');
+subplot(2,2,4);
+imshow(Gdir, []), title('Gradient direction');
+
+
 function show_denoised_images(im_path, ftypes, fsizes)
 fprintf('\n%s: \n', im_path);
 
