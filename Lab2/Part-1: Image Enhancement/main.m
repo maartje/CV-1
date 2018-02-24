@@ -14,9 +14,13 @@ fprintf('psnr %d "im1 - im1_gaussian" .\n\n', PSNR_q2);
 
 show_denoised_images('images/image1_saltpepper.jpg', ["box", "median"], [3,5,7]);
 show_denoised_images('images/image1_gaussian.jpg', ["box", "median"], [3,5,7]);
+
+show_denoised_images('images/image1_saltpepper.jpg', ["gaussian"], [0.5,1,2]);
 show_denoised_images('images/image1_gaussian.jpg', ["gaussian"], [0.5,1,2]);
 
 function show_denoised_images(im_path, ftypes, fsizes)
+fprintf('\n%s: \n', im_path);
+
 im = imread(im_path);
 figure;
 for ft_idx = 1:numel(ftypes)
