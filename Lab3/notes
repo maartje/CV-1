@@ -1,0 +1,17 @@
+Q2.1:
+R = min(lambda1, lambda2)
+http://aishack.in/tutorials/shitomasi-corner-detector/
+
+Q2.2:
+No, since this is a two by two matrix 
+we only have to solve a second order polynomial
+http://lpsa.swarthmore.edu/MtrxVibe/EigMat/MatrixEigen.html
+
+Q2.3:
+a) flat
+b) edge
+c) corner
+
+a,b same cornerness value since we take min.
+c higer cornerness value.
+
