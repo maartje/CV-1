@@ -1,27 +1,38 @@
-% TODO: what about scale?
+% TODO: what about scale invariance?
 
 function [H, r, c] = harris_corner_detector(im)
 im_gray = im2double(rgb2gray(im)); % TODO: best method to deal with channels?
 
-sigma = 1; % TODO: best value?
-fsize = 2 * ceil(2 * sigma) + 1;
-G1 = fspecial('gauss', fsize, sigma);
+% TODO: optimal settings
+sigma1 = 1; 
+sigma2 = 1;
+k = 0.04;
+corner_treshold = -1; % TODO: experiment with different values
+local_max_window_size = 9;
+
+fsize1 = 2 * ceil(2 * sigma1) + 1;
+G1 = fspecial('gauss', fsize1, sigma1);
 [Gx, Gy] = gradient(G1); 
 
 Ix = imfilter(im_gray, Gx, 'replicate');
 Iy = imfilter(im_gray, Gy, 'replicate');
 
-G2 = G1; % TODO: best sigma value?
+fsize2 = 2 * ceil(2 * sigma2) + 1;
+G2 = fspecial('gauss', fsize2, sigma2);
 A = imfilter(Ix .^ 2, G2, 'replicate');
 B = imfilter(Ix .* Iy, G2, 'replicate');
 C = imfilter(Iy .^ 2, G2, 'replicate');
 
+function r = R(a, b, c)
+Q = [a,b; b,c];
+r = det(Q) - k * (trace(Q) ^ 2);
+end
+
 H = arrayfun(@R, A, B, C);
 
 corner_treshold = mean2(H) + 2*std2(H); %TODO: we temp use this to see something
-ksize = 9; % TODO
-local_maximum_indicators = indicate_local_maxima(H, ksize);
 above_treshold_indicators = H > corner_treshold;
+local_maximum_indicators = indicate_local_maxima(H, local_max_window_size); %TODO: fix performance by only looking at above treshold values
 corner_indicators = local_maximum_indicators .* above_treshold_indicators;
 [r, c] = find(corner_indicators);
 
@@ -50,11 +61,6 @@ plot(c, r, 'r*', 'LineWidth', 1, 'MarkerSize', 5);
 
 end
 
-function r = R(a, b, c)
-k = 0.04; % TODO: configurable
-Q = [a,b; b,c];
-r = det(Q) - k * (trace(Q) ^ 2);
-end
 
 function indicators = indicate_local_maxima(M, ksize)
 if mod(ksize, 2) == 0
