@@ -1,3 +1,5 @@
+% TODO: what about scale?
+
 function [H, r, c] = harris_corner_detector(im)
 im_gray = im2double(rgb2gray(im)); % TODO: best method to deal with channels?
 
