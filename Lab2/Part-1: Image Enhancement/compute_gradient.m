@@ -16,7 +16,7 @@ Gx = imfilter(im, GxM);
 Gy = imfilter(im, GyM);
 
 im_magnitude = sqrt(Gx .^2 + Gy .^2);
-im_direction = 1 ./ tan(Gy ./ Gx);
+im_direction = atan(Gy ./ Gx);
 
 end
 

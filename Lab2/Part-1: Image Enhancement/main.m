@@ -3,8 +3,8 @@ clc
 close all
 
 %question6();
-question7();
-%question8();
+%question7();
+question8();
 %question9();
 
 function question9()
@@ -29,13 +29,13 @@ image2 = imread('images/image2.jpg');
 
 figure('Name','Question 8');
 subplot(2,2,1);
-imshow(Gx, []), title('Directional gradient: X axis');
+imshow(mat2gray(Gx), []), title('Directional gradient: X axis');
 subplot(2,2,2);
-imshow(Gy, []), title('Directional gradient: Y axis');
+imshow(mat2gray(Gy), []), title('Directional gradient: Y axis');
 subplot(2,2,3);
-imshow(Gmag, []), title('Gradient magnitude');
+imshow(mat2gray(Gmag), []), title('Gradient magnitude');
 subplot(2,2,4);
-imshow(Gdir, []), title('Gradient direction');
+imshow(mat2gray(Gdir), []), title('Gradient direction');
 end
 
 function question7()

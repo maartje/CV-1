@@ -1,16 +1,25 @@
+close all
+
 %% Hyperparameters
 k        = 2;      % number of clusters in k-means algorithm. By default, 
                    % we consider k to be 2 in foreground-background segmentation task.
-image_id = 'Robin-1'; %'Kobi'; % Identifier to switch between input images.
+                   % Identifier to switch between input images.
                    % Possible ids: 'Kobi',    'Polar', 'Robin-1'
                    %               'Robin-2', 'Cows'
+
+%image_id = 'Robin-1';
+%image_id = 'Robin-2';
+image_id = 'Kobi';
+%image_id = 'Cows';
+%image_id = 'Polar';
+%image_id = 'SciencePark';
 
 % Misc
 err_msg  = 'Image not available.';
 
 % Control settings
 visFlag       = false;    %  Set to true to visualize filter responses.
-smoothingFlag = true;   %  Set to true to postprocess filter outputs.
+smoothingFlag = false;   %  Set to true to postprocess filter outputs.
 
 %% Read image
 switch image_id
@@ -43,7 +52,7 @@ img      = imresize(img,resize_factor);
 img_gray = rgb2gray(img);
 
 % Display image
-figure(1), imshow(img), title(sprintf('Input image: %s', image_id));
+%figure(1), imshow(img), title(sprintf('Input image: %s', image_id));
 
 %% Design array of Gabor Filters
 % In this code section, you will create a Gabor Filterbank. A filterbank is
@@ -67,12 +76,40 @@ n = floor(log2(lambdaMax/lambdaMin));
 lambdas = 2.^(0:(n-2)) * lambdaMin;
 
 % Define the set of orientations for the Gaussian envelope.
-dTheta      = 2*pi/8;                  % \\ the step size
-orientations = 0:dTheta:(pi/2);       
+dTheta      = 2*pi/8; % 2*pi/8;                  % \\ the step size
+orientations = 0:dTheta:(pi-dTheta);       
 
 % Define the set of sigmas for the Gaussian envelope. Sigma here defines 
 % the standard deviation, or the spread of the Gaussian. 
 sigmas = [1,2]; 
+
+% Tune parameters
+switch image_id
+    case 'Kobi'
+        sigmas = [2,3,4];
+    case 'Polar'
+        sigmas = [3,4];
+    case 'Robin-1'
+        sigmas = [3];
+    case 'Robin-2'
+        sigmas = [2.8];
+%         k = 3;
+    case 'Cows'
+        sigmas = [2,3];
+        lambdas = 0.1*lambdas;
+    case 'SciencePark'
+%        sigmas = [1.5];
+        
+    otherwise
+        error(err_msg)
+end
+
+fprintf('lamdas: \n');
+fprintf('*%.2f* ', lambdas);
+fprintf('\n orientations: \n')
+fprintf('*%.2f* ', orientations);
+fprintf('\n sigmas: \n')
+fprintf('*%.2f* ', sigmas);
 
 % Now you can create the filterbank. We provide you with a MATLAB struct
 % called gaborFilterBank in which we will hold the filters and their
@@ -191,8 +228,8 @@ if smoothingFlag
     for jj = 1:length(featureMags)
         % i)  filter the magnitude response with appropriate Gaussian kernels
         % ii) insert the smoothed image into features(:,:,jj)
-        smoothed = imgaussfilt(featureMags{jj});
-        features(:,:,jj) = smoothed;
+        sigm = 1.5*gaborFilterBank(jj).lambda;
+        features(:,:,jj) = imgaussfilt(featureMags{jj}, sigm);
     end
     %END_FOR
 else
@@ -215,13 +252,10 @@ features = reshape(features, numRows * numCols, []);
 %          for more information. \\
 % features = % \\ TODO: i)  Implement standardization on matrix called features. 
 %            %          ii) Return the standardized data matrix.
- mean_values = mean(features);
- features = features - mean_values;
- standard_devs = std(features);
- standard_devs(standard_devs == 0) = 1;
- features = features ./ standard_devs;
-
-
+standard_devs = std(features);
+standard_devs(standard_devs == 0) = 1;
+features = bsxfun(@minus, features, mean(features));
+features = bsxfun(@rdivide,features, standard_devs);
 
 % (Optional) Visualize the saliency map using the first principal component 
 % of the features matrix. It will be useful to diagnose possible problems 
@@ -238,7 +272,7 @@ imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
 % \\ Hint-2: use the parameter k defined in the first section when calling
 %            MATLAB's built-in kmeans function.
 tic
-pixLabels = kmeans(features, k); % \\TODO: Return cluster labels per pixel
+pixLabels = kmeans(features, k, 'Replicates', 5); % \\TODO: Return cluster labels per pixel
 ctime = toc;
 fprintf('Clustering completed in %.3f seconds.\n', ctime);
 
