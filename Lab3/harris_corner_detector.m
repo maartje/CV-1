@@ -1,65 +1,65 @@
 % TODO: what about scale invariance?
 
-function [H, r, c] = harris_corner_detector(im)
+function [H, r, c] = harris_corner_detector(im, threshold_factor)
+
+% settings
+sigma1 = 2; 
+sigma2 = 2;
+k = 0.04;
+local_max_window_size = 9;
+if nargin == 1
+    threshold_factor = 0.25; % set default for threshold factor
+end
 
 % convert to grey scale
 im_gray = im2double(rgb2gray(im)); 
 
-% TODO: optimal settings
-sigma1 = 1; 
-sigma2 = 1;
-k = 0.04;
-corner_treshold = -1; % TODO: experiment with different values
-local_max_window_size = 9;
-
+% calculate derivatives
 fsize1 = 2 * ceil(2 * sigma1) + 1;
 G1 = fspecial('gauss', fsize1, sigma1);
 [Gx, Gy] = gradient(G1); 
+Ix = imfilter(im_gray, Gx, 'replicate', 'conv');
+Iy = imfilter(im_gray, Gy, 'replicate', 'conv');
 
-Ix = imfilter(im_gray, Gx, 'replicate');
-Iy = imfilter(im_gray, Gy, 'replicate');
-
+% calculate elements of matric Q
 fsize2 = 2 * ceil(2 * sigma2) + 1;
 G2 = fspecial('gauss', fsize2, sigma2);
 A = imfilter(Ix .^ 2, G2, 'replicate');
 B = imfilter(Ix .* Iy, G2, 'replicate');
 C = imfilter(Iy .^ 2, G2, 'replicate');
 
+% calculate values for cornerness
 function r = R(a, b, c)
 Q = [a,b; b,c];
 r = det(Q) - k * (trace(Q) ^ 2);
 end
-
 H = arrayfun(@R, A, B, C);
 
-corner_treshold = mean2(H) + 2*std2(H); %TODO: we temp use this to see something
+% select corners by picking local maxima above treshold 
+corner_treshold = mean2(H) + threshold_factor * std2(H); 
 above_treshold_indicators = H > corner_treshold;
-local_maximum_indicators = indicate_local_maxima(H, local_max_window_size); %TODO: fix performance by only looking at above treshold values
+local_maximum_indicators = indicate_local_maxima(H, local_max_window_size); %TODO: improve performance by only looking at above treshold values
 corner_indicators = local_maximum_indicators .* above_treshold_indicators;
 [r, c] = find(corner_indicators);
 
 figure;
-subplot(1,2,1);
+subplot(2,2,1);
 imshow(mat2gray(Ix));
 
-subplot(1,2,2);
+subplot(2,2,2);
 imshow(mat2gray(Iy));
 
-% figure;
-% imshow(mat2gray(H));
-% hold on;
-% plot(c, r, 'r*', 'LineWidth', 1, 'MarkerSize', 5);
-
-figure;
-subplot(1,2,1);
+subplot(2,2,3);
 imshow(im);
 hold on;
 plot(c, r, 'r*', 'LineWidth', 1, 'MarkerSize', 5);
+hold off;
 
-subplot(1,2,2);
+subplot(2,2,4);
 imshow(im_gray);
 hold on;
 plot(c, r, 'r*', 'LineWidth', 1, 'MarkerSize', 5);
+hold off;
 
 end
 
