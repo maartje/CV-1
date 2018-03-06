@@ -1,5 +1,6 @@
 close all
 clear
+warning('off','all');
 
 %im_person = imread('person_toy/00000001.jpg');
 % im_pingpong = imread('pingpong/0000.jpeg'); 
@@ -31,14 +32,23 @@ clear
 %     harris_corner_detector(im_pingpong, i);
 % end
 
-imagefiles = dir('person_toy/*.jpg');   
+% dirname = 'pingpong';
+% ext = 'jpeg';
+% resize_factor = 1;
+
+dirname = 'person_toy';
+ext = 'jpg';
+resize_factor = 0.5;
+
+imagefiles = dir(strcat(dirname, '/*.', ext));  
+video_name = strcat(dirname, '.avi');
 for i=1:length(imagefiles)
-   fname = fullfile('person_toy', imagefiles(i).name);
+   fname = fullfile(dirname, imagefiles(i).name);
    frame = imread(fname);
    frames(:,:,i) = im2double(rgb2gray(frame));
    fprintf('%s \n', fname);
 end
-tracking(frames, 'person_toy.avi');
+tracking(frames, video_name, resize_factor);
 
 % im_toy1 = imread('person_toy/00000001.jpg');
 % im_toy2 = imread('person_toy/00000002.jpg');

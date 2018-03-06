@@ -59,8 +59,8 @@ flow(:,:,2) = flowY;
 if show_figures
     figure;
     imshow(im1);
-    hold on
+    hold on;
     quiver((8:15:columns), (8:15:rows), flow(8:15:end,8:15:end,1), flow(8:15:end,8:15:end,2),'color',[1 0 0]);
-    hold off
+    hold off;
 end
 end

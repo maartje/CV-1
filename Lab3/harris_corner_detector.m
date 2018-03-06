@@ -1,16 +1,22 @@
 % TODO: what about scale invariance?
 
-function [H, r, c] = harris_corner_detector(im, threshold_factor, show_figures)
+function [H, r, c] = harris_corner_detector(im, threshold_factor, sigma1, sigma2, local_max_window_size, show_figures)
 
 % settings
-sigma1 = 2; 
-sigma2 = 2;
 k = 0.04;
-local_max_window_size = 9;
-if nargin == 1
+if nargin < 2
     threshold_factor = 0.25; % set default for threshold factor
 end
 if nargin < 3
+    sigma1 = 2; 
+end
+if nargin < 4
+    sigma2 = 2; 
+end
+if nargin < 5
+    local_max_window_size = 9;
+end
+if nargin < 6
     show_figures = true; 
 end
 
