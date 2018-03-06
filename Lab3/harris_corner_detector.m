@@ -1,6 +1,6 @@
 % TODO: what about scale invariance?
 
-function [H, r, c] = harris_corner_detector(im, threshold_factor)
+function [H, r, c] = harris_corner_detector(im, threshold_factor, show_figures)
 
 % settings
 sigma1 = 2; 
@@ -10,9 +10,19 @@ local_max_window_size = 9;
 if nargin == 1
     threshold_factor = 0.25; % set default for threshold factor
 end
+if nargin < 3
+    show_figures = true; 
+end
 
 % convert to grey scale
-im_gray = im2double(rgb2gray(im)); 
+if ndims(im) == 3
+    im_gray = im2double(rgb2gray(im));
+else
+    im_gray = im2double(im);
+end 
+
+
+ 
 
 % calculate derivatives
 fsize1 = 2 * ceil(2 * sigma1) + 1;
@@ -42,27 +52,28 @@ local_maximum_indicators = indicate_local_maxima(H, local_max_window_size); %TOD
 corner_indicators = local_maximum_indicators .* above_treshold_indicators;
 [r, c] = find(corner_indicators);
 
-fprintf('%d \n ', corner_treshold);
+if show_figures
+    fprintf('%d \n ', corner_treshold);
 
-figure;
-subplot(2,2,1);
-imshow(mat2gray(Ix));
+    figure;
+    subplot(2,2,1);
+    imshow(mat2gray(Ix));
 
-subplot(2,2,2);
-imshow(mat2gray(Iy));
+    subplot(2,2,2);
+    imshow(mat2gray(Iy));
 
-subplot(2,2,3);
-imshow(im);
-hold on;
-plot(c, r, 'r*', 'LineWidth', 1, 'MarkerSize', 5);
-hold off;
+    subplot(2,2,3);
+    imshow(im);
+    hold on;
+    plot(c, r, 'r*', 'LineWidth', 1, 'MarkerSize', 5);
+    hold off;
 
-subplot(2,2,4);
-imshow(im_gray);
-hold on;
-plot(c, r, 'r*', 'LineWidth', 1, 'MarkerSize', 5);
-hold off;
-
+    subplot(2,2,4);
+    imshow(im_gray);
+    hold on;
+    plot(c, r, 'r*', 'LineWidth', 1, 'MarkerSize', 5);
+    hold off;
+end
 end
 
 

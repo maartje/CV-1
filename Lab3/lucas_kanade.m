@@ -1,4 +1,8 @@
-function flow = lucas_kanade(im1, im2)
+function flow = lucas_kanade(im1, im2, show_figures)
+
+if nargin < 3
+    show_figures = true; 
+end
 
 % settings
 region_size = 15;
@@ -24,12 +28,6 @@ It = It(:,:,1);
 
 
 [rows, columns] = size(Ix);
-number_of_regions = ceil(rows/region_size) * ceil(columns/region_size)
-x = zeros([1,number_of_regions]);
-y = zeros([1,number_of_regions]);
-Vx = zeros([1,number_of_regions]);
-Vy = zeros([1,number_of_regions]);
-region_index = 1;
 flowX = zeros(size(Ix));
 flowY = zeros(size(Ix));
 for r = 1 : region_size : rows
@@ -52,28 +50,17 @@ for r = 1 : region_size : rows
         
         flowX(r_start : r_end, c_start : c_end) = v(1,1);
         flowY(r_start : r_end, c_start : c_end) = v(2,1);
-
-        y(region_index) = r_start + floor((r_end - r_start)/2); 
-        x(region_index) = c_start + floor((c_end - c_start)/2);
-        Vx(region_index) = v(1,1);
-        Vy(region_index) = v(2,1);
-        region_index = region_index + 1;
     end
 end
 
 flow = flowX;
 flow(:,:,2) = flowY;
 
-figure;
-imshow(im1);
-hold on
-quiver((8:15:rows), (8:15:columns), flow(8:15:end,8:15:end,1), flow(8:15:end,8:15:end,2),'color',[1 0 0]);
-hold off
-
-
-figure;
-imshow(im1);
-hold on
-quiver(x, y, Vx, Vy,'color',[1 0 0]);
-hold off
+if show_figures
+    figure;
+    imshow(im1);
+    hold on
+    quiver((8:15:columns), (8:15:rows), flow(8:15:end,8:15:end,1), flow(8:15:end,8:15:end,2),'color',[1 0 0]);
+    hold off
+end
 end
