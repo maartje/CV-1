@@ -1,4 +1,4 @@
-function lucas_kanade(im1, im2)
+function flow = lucas_kanade(im1, im2)
 
 % settings
 region_size = 15;
@@ -30,6 +30,8 @@ y = zeros([1,number_of_regions]);
 Vx = zeros([1,number_of_regions]);
 Vy = zeros([1,number_of_regions]);
 region_index = 1;
+flowX = zeros(size(Ix));
+flowY = zeros(size(Ix));
 for r = 1 : region_size : rows
     for c = 1 : region_size : columns
         r_start = r;
@@ -47,6 +49,9 @@ for r = 1 : region_size : rows
         % (A^T A)^-1 A^T b
         % v = inv(transpose(A) * A) * (transpose(A) * b);
         v = (transpose(A) * A) \ (transpose(A) * b);
+        
+        flowX(r_start : r_end, c_start : c_end) = v(1,1);
+        flowY(r_start : r_end, c_start : c_end) = v(2,1);
 
         y(region_index) = r_start + floor((r_end - r_start)/2); 
         x(region_index) = c_start + floor((c_end - c_start)/2);
@@ -56,19 +61,19 @@ for r = 1 : region_size : rows
     end
 end
 
-% figure;
-% subplot(2,2,1);
-% imshow(mat2gray(Ix(:,:,1)));
-% subplot(2,2,2);
-% imshow(mat2gray(Iy(:,:,2)));
-% subplot(2,2,3);
-% imshow(mat2gray(It(:,:,2)));
-% subplot(2,2,4);
-% imshow(im_gray1);
+flow = flowX;
+flow(:,:,2) = flowY;
 
 figure;
 imshow(im1);
 hold on
-quiver(x, y, Vx, Vy);
+quiver((8:15:rows), (8:15:columns), flow(8:15:end,8:15:end,1), flow(8:15:end,8:15:end,2),'color',[1 0 0]);
+hold off
+
+
+figure;
+imshow(im1);
+hold on
+quiver(x, y, Vx, Vy,'color',[1 0 0]);
 hold off
 end

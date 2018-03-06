@@ -42,6 +42,8 @@ local_maximum_indicators = indicate_local_maxima(H, local_max_window_size); %TOD
 corner_indicators = local_maximum_indicators .* above_treshold_indicators;
 [r, c] = find(corner_indicators);
 
+fprintf('%d \n ', corner_treshold);
+
 figure;
 subplot(2,2,1);
 imshow(mat2gray(Ix));
