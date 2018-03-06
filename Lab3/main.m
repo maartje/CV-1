@@ -32,13 +32,13 @@ clear
 % end
 
 imagefiles = dir('person_toy/*.jpg');   
-for i=1:2 %length(imagefiles)
+for i=1:length(imagefiles)
    fname = fullfile('person_toy', imagefiles(i).name);
    frame = imread(fname);
    frames(:,:,i) = im2double(rgb2gray(frame));
    fprintf('%s \n', fname);
 end
-tracking(frames);
+tracking(frames, 'person_toy.avi');
 
 % im_toy1 = imread('person_toy/00000001.jpg');
 % im_toy2 = imread('person_toy/00000002.jpg');
