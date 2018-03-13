@@ -1,4 +1,4 @@
-function ransac(f1, f2, matches, n, p)
+function [M, T] = ransac(f1, f2, matches, n, p)
     
     % pixel coordinates (x,y) for matchpoints
     % in first image (mp_1) and second image (mp_2)
@@ -6,6 +6,8 @@ function ransac(f1, f2, matches, n, p)
     mp2 = f2(1:2, matches(2,:));
     
     inliers = [];
+    M = zeros(2, 2);
+    T = zeros(2,1);
     for i = 1:n
         
         % randomly select 'p' points
@@ -14,10 +16,41 @@ function ransac(f1, f2, matches, n, p)
         mp1_selected = mp1(:, indices_selected);
         mp2_selected = mp2(:, indices_selected);
         
-        % construct transformation vector 'x' by solving
+        % estimate rotation+scaling and translation matrices 
+        % based on selected points
+        [M_current, T_current] = estimate_transformation(mp1_selected, mp2_selected);
+        
+        % transform all matched points from image 1
+        mp1_transformed = M_current * mp1 + T_current;
+        
+        % TODO: plot im1,T + im2, T_tr
+        
+        % count inliers and update result values
+        % when the number of inliers has increased 
+        mp_diffs = mp1_transformed - mp2;
+        distances_sq = mp_diffs(1,:) .^ 2 + mp_diffs(2,:) .^ 2; 
+        inliers_current = distances_sq < 100;
+        if sum(inliers_current) > sum(inliers)
+            inliers = inliers_current;
+            M = M_current;
+            T = T_current;
+        end        
+%         fprintf('%d %d \n', sum(inliers_current), sum(inliers));
+    end
+    
+    % re-compute least-squares estimate on all of the inliers
+    [M, T] = estimate_transformation(mp1(:, inliers), mp2(:, inliers));
+
+
+
+end
+
+function [M, T] = estimate_transformation(mp1_selected, mp2_selected)
+        % construct transformation parameters 'x' by solving
         % the equation Ax = b
-        A = zeros(8, 6);
-        for i = 1 : size(mp1_selected, 2)
+        nr_of_points = size(mp1_selected, 2);
+        A = zeros(nr_of_points * 2, 6);
+        for i = 1 : nr_of_points
             x = mp1_selected(1, i);
             y = mp1_selected(2, i);
             A_index = 2 * i - 1;
@@ -29,29 +62,11 @@ function ransac(f1, f2, matches, n, p)
         b = mp2_selected(:);
         x = pinv(A) * b;
 
-        % transform all matches in image 1
+        % construct rotation+scaling and translation matrices
         M = [
             x(1), x(2);
             x(3), x(4)
         ];
         T = [x(5); x(6)];
-        mp1_transformed = M * mp1 + T;
-        
-        % TODO: plot im1,T + im2, T_tr
-        
-        % count inliers
-        mp_diffs = mp1_transformed - mp2;
-        distances = sqrt(mp_diffs(1,:) .^ 2 + mp_diffs(2,:) .^ 2);
-        if sum(distances < 10) > length(inliers)
-            inliers = distances < 10;
-        end
-        
-        fprintf('%d \n', sum(distances < 10));
-
-
-        
-
-    end
-
-
 end
+
