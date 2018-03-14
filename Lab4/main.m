@@ -3,25 +3,10 @@ close all
 clear
 
 %demo_image_alignment('boat1.pgm', 'boat2.pgm');
-demo_image_alignment('boat2.pgm', 'boat1.pgm');
+%demo_image_alignment('boat2.pgm', 'boat1.pgm');
 %demo_stitching('left.jpg', 'right.jpg');
 %demo_stitching('right.jpg', 'left.jpg');
-
-function demo_stitching(impath1, impath2)
-    % stitch two images
-    im1 = imread(impath1);
-    im2 = imread(impath2);
-    im_stitched = stitch(im1, im2);
-
-    % show original images and stitched images
-    figure;
-    subplot(1,3,1);
-    imshow(im1);
-    subplot(1,3,2);
-    imshow(im2);
-    subplot(1,3,3);
-    imshow(im_stitched);
-end
+experiment_ransac('boat1.pgm', 'boat2.pgm');
 
 function demo_image_alignment(impath1, impath2)
 
@@ -31,7 +16,7 @@ function demo_image_alignment(impath1, impath2)
 
     % transform image1 to image2
     [f1, f2, kpmatches] = keypoint_matching(im1, im2);
-    [M, T] = ransac(f1, f2, kpmatches, 5, 4);    
+    [M, T] = ransac(f1, f2, kpmatches, 10, 4);    
     im1_to_im2 = transform_image(im1, M, T);
 
     % transform image1 to image2 using matlab functions
@@ -58,3 +43,32 @@ function demo_image_alignment(impath1, impath2)
 
 end
 
+function demo_stitching(impath1, impath2)
+    % stitch two images
+    im1 = imread(impath1);
+    im2 = imread(impath2);
+    im_stitched = stitch(im1, im2);
+
+    % show original images and stitched images
+    figure;
+    subplot(1,3,1);
+    imshow(im1);
+    subplot(1,3,2);
+    imshow(im2);
+    subplot(1,3,3);
+    imshow(im_stitched);
+end
+
+function experiment_ransac(impath1, impath2)
+
+    % read two images
+    im1 = imread(impath1);
+    im2 = imread(impath2);
+    
+    % perform ransac
+    [f1, f2, kpmatches] = keypoint_matching(im1, im2);
+    ransac(f1, f2, kpmatches, 5, 4, im1, im2);    
+%     ransac(f1, f2, kpmatches, 5, 8, im1, im2);    
+%     ransac(f1, f2, kpmatches, 5, 3, im1, im2);    
+%     ransac(f1, f2, kpmatches, 5, 2, im1, im2);    
+end

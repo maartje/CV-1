@@ -1,4 +1,4 @@
-function [M, T] = ransac(f1, f2, matches, n, p)
+function [M, T] = ransac(f1, f2, matches, n, p, im1, im2)
     
     % pixel coordinates (x,y) for matchpoints
     % in first image (mp_1) and second image (mp_2)
@@ -22,9 +22,7 @@ function [M, T] = ransac(f1, f2, matches, n, p)
         
         % transform all matched points from image 1
         mp1_transformed = M_current * mp1 + T_current;
-        
-        % TODO: plot im1,T + im2, T_tr
-        
+                
         % count inliers and update result values
         % when the number of inliers has increased 
         mp_diffs = mp1_transformed - mp2;
@@ -34,8 +32,46 @@ function [M, T] = ransac(f1, f2, matches, n, p)
             inliers = inliers_current;
             M = M_current;
             T = T_current;
-        end        
-%         fprintf('%d %d \n', sum(inliers_current), sum(inliers));
+        end
+        
+        if nargin == 7 % images are passed for visualization
+             
+            % random sample of size 50
+            r = randperm(size(matches, 2), 20);
+            sample_mp1 = mp1(:, r);
+            sample_mp1_transformed = mp1_transformed(:, r);
+            X1 = sample_mp1(1,:);
+            Y1 = sample_mp1(2,:);
+            X2 = sample_mp1_transformed(1,:) + size(im1, 2);
+            Y2 = sample_mp1_transformed(2,:);
+
+            X1_selected = mp1_selected(1,:);
+            Y1_selected = mp1_selected(2,:);
+            X2_selected = mp2_selected(1,:) + size(im1, 2);
+            Y2_selected = mp2_selected(2,:);
+            
+            im_concatenated = concatenate_images(im1, im2);
+            
+            figure();
+            imshow(im_concatenated);
+            title(strcat('#inliers: ', num2str(sum(inliers_current)), '#P: ', num2str(p) ));
+            hold on;
+            lines = plot([X1; X2], [Y1; Y2]);
+            set(lines,'color','y');
+            
+            lines = plot([X1_selected; X2_selected], [Y1_selected; Y2_selected]);
+            set(lines,'color','r', 'LineWidth', 2);
+            plot([X1_selected; X2_selected], [Y1_selected; Y2_selected], 'r*', 'LineWidth', 2, 'MarkerSize', 15);
+
+            hold off;
+            
+            % print info 
+            fprintf('number of points: %d \n', p);
+            fprintf('iteration: %d \n', i);
+            fprintf('current number of inliers: %d \n', sum(inliers_current));
+            fprintf('total of inliers:          %d \n \n', sum(inliers));
+        end
+
     end
     
     % re-compute least-squares estimate on all of the inliers

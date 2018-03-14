@@ -5,29 +5,22 @@ function visualize_matching_keypoints(matches, im1, im2, f1, f2)
     sample_matches = matches(:, r);
 
     % select pixel coordinates of selected matches 
-    X_1 = f1(1,sample_matches(1,:));
-    Y_1 = f1(2,sample_matches(1,:));
-    X_2 = f2(1,sample_matches(2,:)) + size(im1, 2);
-    Y_2 = f2(2,sample_matches(2,:));
+    X1 = f1(1,sample_matches(1,:));
+    Y1 = f1(2,sample_matches(1,:));
+    X2 = f2(1,sample_matches(2,:)) + size(im1, 2);
+    Y2 = f2(2,sample_matches(2,:));
 
     % concatenate the images    
-    h1 = size(im1, 1);
-    h2 = size(im2, 1);
-    h = max(h1, h2);
-    im1_padded = zeros(h, size(im1, 2), 'uint8');
-    im2_padded = zeros(h, size(im2, 2), 'uint8');    
-    im1_padded(1:size(im1, 1),1:size(im1, 2)) = im1;
-    im2_padded(1:size(im2, 1),1:size(im2, 2)) = im2;        
-    im_concatenated = cat(2, im1_padded, im2_padded);
+    im_concatenated = concatenate_images(im1, im2);
 
     % Plot concatenated figure
-    figure(1);
+    figure();
     imshow(im_concatenated);
 
     hold on;
 
     % plot the lines
-    lines = plot([X_1; X_2], [Y_1;Y_2]);
+    lines = plot([X1; X2], [Y1; Y2]);
     set(lines,'color','y');
 
     % plot the points scale and rotation (if available)
