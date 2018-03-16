@@ -1,12 +1,9 @@
 function im_stitched = stitch(im1, im2)
 
     % transform image2 so that it aligns with image1
-    % transform each color channel separately and stack the results together
     [f1, f2, kpmatches] = keypoint_matching(im2, im1);
     [M, T] = ransac(f1, f2, kpmatches, 10, 4);    
-    [im2_to_im1, translate_x, translate_y] = transform_image(im2(:,:,1), M, T);
-    im2_to_im1(:,:,2) = transform_image(im2(:,:,2), M, T);
-    im2_to_im1(:,:,3) = transform_image(im2(:,:,3), M, T);
+    [im2_to_im1, translate_x, translate_y] = transform_image(im2, M, T)
     
     % calculate coordinate frame 
     min_y = min(0, translate_y);

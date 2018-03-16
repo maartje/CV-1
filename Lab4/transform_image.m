@@ -1,5 +1,13 @@
 function [I_transformed, translate_x, translate_y] = transform_image(im, M, T)
 
+    % transform color channels separately and stack the results together
+    if size(im, 3) == 3
+        [I_transformed, translate_x, translate_y] = transform_image(im(:,:,1), M, T);
+        I_transformed(:,:,2) = transform_image(im(:,:,2), M, T);
+        I_transformed(:,:,3) = transform_image(im(:,:,3), M, T);
+        return;
+    end
+
     % transform to double values
     I = double(im); %im2double(im);
     
