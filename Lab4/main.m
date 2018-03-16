@@ -3,9 +3,9 @@ close all
 clear
 
 demo_image_alignment('boat1.pgm', 'boat2.pgm');
-% demo_image_alignment('boat2.pgm', 'boat1.pgm');
-% demo_stitching('left.jpg', 'right.jpg');
-% demo_stitching('right.jpg', 'left.jpg');
+demo_image_alignment('boat2.pgm', 'boat1.pgm');
+demo_stitching('left.jpg', 'right.jpg');
+demo_stitching('right.jpg', 'left.jpg');
 % experiment_ransac('boat1.pgm', 'boat2.pgm');
 
 function demo_image_alignment(impath1, impath2)

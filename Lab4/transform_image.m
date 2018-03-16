@@ -50,8 +50,6 @@ function [I_transformed, translate_x, translate_y] = transform_image(im, M, T)
         end
     end
     
-    
-
     % Fill the transformed image from the I_xy_transformed values,
     % applying nearest neighbor interpolation again to fill-in the values for 
     % missing pointers
