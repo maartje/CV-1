@@ -2,11 +2,22 @@
 close all
 clear
 
-fnames = select_filenames_to_build_vocabulary(0.01);
-fun_extract_features = @(im) extract_features(im, 'grey');
+% build vocabulary
+percentage_of_files = 0.01;
 vocabulary_size = 10;
 replicates = 5;
-visual_words = build_vocabulary(fun_extract_features, fnames, vocabulary_size, replicates);
+fun_extract_features = @(im) double(extract_features(im, 'grey'));
+fnames = select_filenames_to_build_vocabulary(percentage_of_files);
+vocabulary = build_vocabulary(fun_extract_features, fnames, vocabulary_size, replicates);
+% TODO: in function read write to file 'vocabulary_numfiles_vsize', opt
+% argument cache=true
+
+% Build matrix of dimensions vocabulary-size by number of files.
+% Each column represents the frequenties of 'visual word' for an image file
+word_frequenties = quantize_features(fnames, fun_extract_features, vocabulary);
+% TODO: add optional argument cache that reads and writes to disk
+
+
 
 function fnames = select_filenames_to_build_vocabulary(percentage)
     if nargin < 1

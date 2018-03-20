@@ -1,11 +1,11 @@
-function visual_words = build_vocabulary(fun_extract_features, fnames, vocabulary_size, replicates)
+function vocabulary = build_vocabulary(fun_extract_features, fnames, vocabulary_size, replicates)
 % Builds a vocabulary by applying kmeans clustering on features
 % fun_extract_features: function to extract features for an image
 % fnames: cell array of file paths to image files
 % vocabulary_size: size of vocabulary
 % replicates (optional): number of replications to search for optimal clustering
-% visual_words: k by p matrix with 
-%     k the vocabulary size and 
+% vocabulary: k by p matrix with 
+%     k the number of visual words and 
 %     p the dimension determined by the extracted features
 
     if nargin < 2
@@ -25,21 +25,21 @@ function visual_words = build_vocabulary(fun_extract_features, fnames, vocabular
             descriptors = d;
         end
     end
-    visual_words = build_vocabulary_from_features(transpose(descriptors), vocabulary_size, replicates);
+    vocabulary = build_vocabulary_from_features(transpose(descriptors), vocabulary_size, replicates);
 
 end
 
-function visual_words = build_vocabulary_from_features(features, vocabulary_size, replicates)
+function vocabulary = build_vocabulary_from_features(features, vocabulary_size, replicates)
 % Builds a vocabulary by applying kmeans clustering on features
 % features: n by p matrix with 
 %    p the dimensionality and 
 %    n the number of observations
 % vocabulary_size: size of vocabulary
 % replicates (optional): number of replications to search for optimal clustering
-% visual_words: k by p matrix with k the vocabulary size 
+% vocabulary: k by p matrix containing k p-dimensional visual words 
 
     
     % TODO: preprocessing such as normalization?
 
-    [~, visual_words] = kmeans(double(features), vocabulary_size, 'Replicates', replicates);
+    [~, vocabulary] = kmeans(features, vocabulary_size, 'Replicates', replicates);
 end
