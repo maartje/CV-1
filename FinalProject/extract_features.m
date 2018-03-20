@@ -41,7 +41,7 @@ function d = extract_features_frames(im, colorspace)
     % extract color SIFT descriptions for keypoints
     switch colorspace
         case 'grey'
-            d = d_grey
+            d = d_grey;
         case 'RGB'
             d = extract_sift_color(im, frames);
         case 'rgb'
