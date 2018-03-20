@@ -3,18 +3,10 @@ close all
 clear
 
 fnames = select_filenames_to_build_vocabulary(0.01);
-descriptors = 0;
-for i=1:length(fnames)
-    fname = fnames(i);
-    im = imread(fname{1});
-    d = extract_features(im, 'grey'); % 128 (* 3) x 410
-    if descriptors
-        descriptors = horzcat(descriptors,d);
-    else
-        descriptors = d;
-    end
-end
-mj = build_vocabulary(transpose(descriptors), 10, 2);
+fun_extract_features = @(im) extract_features(im, 'grey');
+vocabulary_size = 10;
+replicates = 5;
+visual_words = build_vocabulary(fun_extract_features, fnames, vocabulary_size, replicates);
 
 function fnames = select_filenames_to_build_vocabulary(percentage)
     if nargin < 1

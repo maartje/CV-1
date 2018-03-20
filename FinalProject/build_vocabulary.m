@@ -1,4 +1,35 @@
-function visual_words = build_vocabulary(features, vocabulary_size, replicates)
+function visual_words = build_vocabulary(fun_extract_features, fnames, vocabulary_size, replicates)
+% Builds a vocabulary by applying kmeans clustering on features
+% fun_extract_features: function to extract features for an image
+% fnames: cell array of file paths to image files
+% vocabulary_size: size of vocabulary
+% replicates (optional): number of replications to search for optimal clustering
+% visual_words: k by p matrix with 
+%     k the vocabulary size and 
+%     p the dimension determined by the extracted features
+
+    if nargin < 2
+        vocabulary_size = 400;
+    end
+    if nargin < 3
+        replicates = 5;
+    end
+    descriptors = 0;
+    for i=1:length(fnames)
+        fname = fnames(i);
+        im = imread(fname{1});
+        d = fun_extract_features(im); % 128 (* 3) x 410
+        if descriptors
+            descriptors = horzcat(descriptors,d);
+        else
+            descriptors = d;
+        end
+    end
+    visual_words = build_vocabulary_from_features(transpose(descriptors), vocabulary_size, replicates);
+
+end
+
+function visual_words = build_vocabulary_from_features(features, vocabulary_size, replicates)
 % Builds a vocabulary by applying kmeans clustering on features
 % features: n by p matrix with 
 %    p the dimensionality and 
@@ -7,9 +38,6 @@ function visual_words = build_vocabulary(features, vocabulary_size, replicates)
 % replicates (optional): number of replications to search for optimal clustering
 % visual_words: k by p matrix with k the vocabulary size 
 
-    if nargin < 3
-        replicates = 1;
-    end
     
     % TODO: preprocessing such as normalization?
 
