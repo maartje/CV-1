@@ -1,17 +1,26 @@
-function d = extract_features(im, colorspace, type, step_size)
+function descriptors = extract_features(fnames, colorspace, detector, step_size)
 % Extract SIFT descriptors
-% colorspace can be: 'grey', 'RGB', 'rgb', 'opponent'
-% type can be: 'dense' or 'keypoints'. Default is 'keypoints'
+% fnames: names of image files
+% colorspace: 'grey', 'RGB', 'rgb', 'opponent'
+% detector: 'dense' or 'keypoints'. Default is 'keypoints'
 % stepsize: positive integer
+% descriptors: cell array filled with matrices 'feature_size x number of descriptors' for all
+% files
 
-    im_single = im2single(im);
-    if nargin > 2 & type == 'dense'
-        if nargin < 4
-            step_size = 10;
-        end
-        d = extract_features_dense(im_single, colorspace, step_size);
-    else
-        d = extract_features_frames(im_single, colorspace);
+    descriptors = cell(length(fnames),1);
+    for i=1:length(fnames)
+        fname = fnames(i);
+        im = imread(fname{1});        
+        im_single = im2single(im);
+        if nargin > 2 && strcmp(detector, 'dense')
+            if nargin < 4
+                step_size = 15;
+            end
+            d = extract_features_dense(im_single, colorspace, step_size);
+        else
+            d = extract_features_frames(im_single, colorspace);
+        end        
+        descriptors{i} = normc(double(d));
     end
 end
 
@@ -45,7 +54,9 @@ function d = extract_features_frames(im, colorspace)
         case 'RGB'
             d = extract_sift_color(im, frames);
         case 'rgb'
-            d = extract_sift_color(rgb2normedrgb(im), frames);
+            im_rgb = rgb2normedrgb(im);
+            im_rgb(isnan(im_rgb)) = 0;
+            d = extract_sift_color(im_rgb, frames);
         case 'opponent'
             d = extract_sift_color(rgb2opponent(im), frames);
         otherwise
@@ -80,7 +91,7 @@ function d = extract_sift_greyscale_dense(im, step_size)
 end
 
 function d = extract_sift_color(im, frames)
-    
+
     % sift per channel for given frames
     [~, d1] = vl_sift(im(:, :, 1), 'Frames', frames);
     [~, d2] = vl_sift(im(:, :, 2), 'Frames', frames);
