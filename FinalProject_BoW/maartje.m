@@ -18,7 +18,18 @@
 %     ap = (1/m) * (precision_at_rank * labels);
 % end
 
-%% split training data into a set for building the vocabulary and a set for training the classifier
-[xfnames_vocabulary, xfnames_train, xlabels_train, xfnames_test, xlabels_test, xfnames_dev, xlabels_dev] = split_data( ...
-        3, 4);
- x = 1;
+% % split training data into a set for building the vocabulary and a set for training the classifier
+% [xfnames_vocabulary, xfnames_train, xlabels_train, xfnames_test, xlabels_test, xfnames_dev, xlabels_dev] = split_data( ...
+%         3, 4);
+%  x = 1;
+
+load fisheriris
+inds = ~strcmp(species,'setosa');
+X = meas(inds,3:4);
+y = species(inds);
+kernels = {'linear', 'RBF', 'polynomial'};
+
+for kernel = kernels
+    SVMModel = fitcsvm(X,y, 'KernelFunction', kernel{1});
+    [l, ~] = predict(SVMModel, X);
+end

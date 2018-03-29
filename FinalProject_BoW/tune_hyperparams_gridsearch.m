@@ -1,16 +1,14 @@
 %run ../vlfeat0921/toolbox/vl_setup
 close all
 clear
+warning('off','all');
+
 
 %% Hyperparameters
-vocabulary_sizes = [400, 2000];
-colorspaces = ["RGB", "grey"];
+vocabulary_sizes = [400, 800, 1600, 2000, 4000];
+colorspaces = ["RGB", "rgb", "opponent", "grey"];
 detectors = ["keypoints", "dense"];
-kernels = {'linear', 'RBF'}; % TODO use [...]
-% vocabulary_sizes = [400, 800, 1600, 2000, 4000];
-% colorspaces = ["RGB", "rgb", "opponent", "grey"];
-% detectors = ["keypoints", "dense"];
-% kernels = {'linear', 'RBF'}; % TODO use [...]
+kernels = {'linear', 'RBF', 'polynomial'};
 
 %% Fixed parameters
 vocabulary_sample_size = 120;
