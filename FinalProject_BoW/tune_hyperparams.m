@@ -34,15 +34,22 @@ disp({
     "motor_bikes", sum(labels_train == 4), ...
  });
 
+tic;
+
 %% use default settings
 features_vocabulary = extract_features(fnames_vocabulary, d_colorspace, d_detector);
 features_train = extract_features(fnames_train, d_colorspace, d_detector);
 features_dev = extract_features(fnames_dev, d_colorspace, d_detector);
+disp({"extract features", length([fnames_vocabulary; fnames_train; fnames_dev]), toc});
 vocabulary = build_vocabulary(features_vocabulary, d_vocabulary_size);
+disp({"build vocabulary", toc});
 histograms_train = build_histograms(features_train, vocabulary);
 histograms_dev = build_histograms(features_dev, vocabulary);
+disp({"histograms from features", length([fnames_train; fnames_dev]), toc});
 classifiers = train_classifiers(histograms_train, labels_train, d_kernel);
+disp({"train classifiers", toc});
 [map, ap_scores] = evaluate(classifiers, histograms_dev, labels_dev, fnames_dev);
+disp({"evaluate", toc});
 disp({d_colorspace, d_detector, d_vocabulary_size, d_kernel, map});
 
 %% vary kernel type
@@ -92,3 +99,5 @@ for detector_idx = 1 : length(detectors)
 
     disp({d_colorspace, detector, d_vocabulary_size, d_kernel, map});
 end
+
+disp({"total time: ", toc});
