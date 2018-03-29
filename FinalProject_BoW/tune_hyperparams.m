@@ -37,6 +37,7 @@ disp({
 tic;
 
 %% use default settings
+disp({"start time", "default", toc});
 features_vocabulary = extract_features(fnames_vocabulary, d_colorspace, d_detector);
 features_train = extract_features(fnames_train, d_colorspace, d_detector);
 features_dev = extract_features(fnames_dev, d_colorspace, d_detector);
@@ -51,16 +52,22 @@ disp({"train classifiers", toc});
 [map, ap_scores] = evaluate(classifiers, histograms_dev, labels_dev, fnames_dev);
 disp({"evaluate", toc});
 disp({d_colorspace, d_detector, d_vocabulary_size, d_kernel, map});
+disp(transpose(ap_scores));
+disp({"end time", "default", toc});
 
 %% vary kernel type
 for kernel = kernels
+    disp({"start time", kernel{1}, toc});
     classifiers = train_classifiers(histograms_train, labels_train, kernel{1});
     [map, ap_scores] = evaluate(classifiers, histograms_dev, labels_dev, fnames_dev);            
     disp({d_colorspace, d_detector, d_vocabulary_size, kernel{1}, map});
+    disp(transpose(ap_scores));
+    disp({"end time", kernel{1}, toc});
 end
 
 %% vary vocabulary size    
 for vocabulary_size_idx = 1 : length(vocabulary_sizes)
+    disp({"start time", "vocab_size", vocabulary_size, toc});
     vocabulary_size = vocabulary_sizes(vocabulary_size_idx);
     vocabulary = build_vocabulary(features_vocabulary, vocabulary_size);
     histograms_train = build_histograms(features_train, vocabulary);
@@ -68,10 +75,13 @@ for vocabulary_size_idx = 1 : length(vocabulary_sizes)
     classifiers = train_classifiers(histograms_train, labels_train, d_kernel);
     [map, ap_scores] = evaluate(classifiers, histograms_dev, labels_dev, fnames_dev);
     disp({d_colorspace, d_detector, vocabulary_size, d_kernel, map});
+    disp(transpose(ap_scores));
+    disp({"end time", "vocab_size", vocabulary_size, toc});
 end
 
 %% vary color spaces
 for colorspace_idx = 1 : length(colorspaces)
+    disp({"start time", colorspace, toc});
     colorspace = colorspaces(colorspace_idx);
     features_vocabulary = extract_features(fnames_vocabulary, colorspace, d_detector);
     features_train = extract_features(fnames_train, colorspace, d_detector);
@@ -83,10 +93,13 @@ for colorspace_idx = 1 : length(colorspaces)
     [map, ap_scores] = evaluate(classifiers, histograms_dev, labels_dev, fnames_dev);
 
     disp({colorspace, d_detector, d_vocabulary_size, d_kernel, map});
+    disp(transpose(ap_scores));
+    disp({"end time", colorspace, toc});
 end
     
 %% vary detector types    
 for detector_idx = 1 : length(detectors)
+    disp({"start time", detector, toc});
     detector = detectors(detector_idx);
     features_vocabulary = extract_features(fnames_vocabulary, d_colorspace, detector);
     features_train = extract_features(fnames_train, d_colorspace, detector);
@@ -98,6 +111,8 @@ for detector_idx = 1 : length(detectors)
     [map, ap_scores] = evaluate(classifiers, histograms_dev, labels_dev, fnames_dev);
 
     disp({d_colorspace, detector, d_vocabulary_size, d_kernel, map});
+    disp(transpose(ap_scores));
+    disp({"end time", detector, toc});
 end
 
 disp({"total time: ", toc});
