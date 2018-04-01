@@ -67,8 +67,8 @@ end
 
 %% vary vocabulary size    
 for vocabulary_size_idx = 1 : length(vocabulary_sizes)
-    disp({"start time", "vocab_size", vocabulary_size, toc});
     vocabulary_size = vocabulary_sizes(vocabulary_size_idx);
+    disp({"start time", "vocab_size", vocabulary_size, toc});
     vocabulary = build_vocabulary(features_vocabulary, vocabulary_size);
     histograms_train = build_histograms(features_train, vocabulary);
     histograms_dev = build_histograms(features_dev, vocabulary);
@@ -81,8 +81,8 @@ end
 
 %% vary color spaces
 for colorspace_idx = 1 : length(colorspaces)
-    disp({"start time", colorspace, toc});
     colorspace = colorspaces(colorspace_idx);
+    disp({"start time", colorspace, toc});
     features_vocabulary = extract_features(fnames_vocabulary, colorspace, d_detector);
     features_train = extract_features(fnames_train, colorspace, d_detector);
     features_dev = extract_features(fnames_dev, colorspace, d_detector);
@@ -99,8 +99,8 @@ end
     
 %% vary detector types    
 for detector_idx = 1 : length(detectors)
-    disp({"start time", detector, toc});
     detector = detectors(detector_idx);
+    disp({"start time", detector, toc});
     features_vocabulary = extract_features(fnames_vocabulary, d_colorspace, detector);
     features_train = extract_features(fnames_train, d_colorspace, detector);
     features_dev = extract_features(fnames_dev, d_colorspace, detector);

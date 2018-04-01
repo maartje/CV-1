@@ -14,7 +14,7 @@ function descriptors = extract_features(fnames, colorspace, detector, step_size)
         im_single = im2single(im);
         if nargin > 2 && strcmp(detector, 'dense')
             if nargin < 4
-                step_size = 15;
+                step_size = 10;
             end
             d = extract_features_dense(im_single, colorspace, step_size);
         else
