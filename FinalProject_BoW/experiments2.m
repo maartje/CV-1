@@ -52,25 +52,25 @@ for vocab_size_idx = 1 : length(vocabulary_sizes)
     d_vocabulary = build_vocabulary(d_features_vocabulary, vocab_size);
     d_histograms_dev = build_histograms(features_dev, d_vocabulary);
 
-    for train_sample_size_idx = 1 : length(train_sample_sizes)
-        train_sample_size = train_sample_sizes(train_sample_size_idx);
-        [~, alt_fnames_train, alt_labels_train, ~, ~, ~, ~] = split_data( ...
-        vocabulary_sample_size, dev_sample_size, train_sample_size);
-        alt_features_train = extract_features(alt_fnames_train, "RGB", "keypoints");
-        histograms_train = build_histograms(alt_features_train, d_vocabulary);
-        classifiers = train_classifiers(histograms_train, alt_labels_train, 'linear');
-        [map, ap_scores] = evaluate(classifiers, d_histograms_dev, labels_dev, fnames_dev);
-        [map_train, ap_scores_train] = evaluate(classifiers, histograms_train, alt_labels_train, alt_fnames_train);
-
-        disp({"train_sample_size", vocab_size, train_sample_size, "map", map, "map_train", map_train});
-%         disp(transpose(ap_scores));
-    
-    end
+%     for train_sample_size_idx = 1 : length(train_sample_sizes)
+%         train_sample_size = train_sample_sizes(train_sample_size_idx);
+%         [~, alt_fnames_train, alt_labels_train, ~, ~, ~, ~] = split_data( ...
+%         vocabulary_sample_size, dev_sample_size, train_sample_size);
+%         alt_features_train = extract_features(alt_fnames_train, "RGB", "keypoints");
+%         histograms_train = build_histograms(alt_features_train, d_vocabulary);
+%         classifiers = train_classifiers(histograms_train, alt_labels_train, 'linear');
+%         [map, ap_scores] = evaluate(classifiers, d_histograms_dev, labels_dev, fnames_dev);
+%         [map_train, ap_scores_train] = evaluate(classifiers, histograms_train, alt_labels_train, alt_fnames_train);
+% 
+%         disp({"train_sample_size", vocab_size, train_sample_size, "map", map, "map_train", map_train});
+% %         disp(transpose(ap_scores));
+%     
+%     end
 
     for vocab_sample_size_idx = 1 : length(vocabulary_sample_sizes)
         vocab_sample_size = vocabulary_sample_sizes(vocab_sample_size_idx);
         [alt_fnames_vocabulary, ~, ~, ~, ~, ~, ~] = split_data( ...
-                vocabulary_sample_size, dev_sample_size);
+                vocab_sample_size, dev_sample_size);
 
         features_vocabulary = extract_features(alt_fnames_vocabulary, "RGB", "keypoints");
         vocabulary = build_vocabulary(features_vocabulary, vocab_size);
@@ -86,18 +86,52 @@ for vocab_size_idx = 1 : length(vocabulary_sizes)
 end
 
 
-vocabulary_sizes = [50, 100, 200];
-for vocab_size_idx = 1 : length(vocabulary_sizes)
-    vocab_size = vocabulary_sizes(vocab_size_idx);
-    vocabulary = build_vocabulary(d_features_vocabulary, vocab_size);
-    histograms_dev = build_histograms(features_dev, vocabulary);
+% vocabulary_sizes = [50, 100, 200];
+% for vocab_size_idx = 1 : length(vocabulary_sizes)
+%     vocab_size = vocabulary_sizes(vocab_size_idx);
+%     vocabulary = build_vocabulary(d_features_vocabulary, vocab_size);
+%     histograms_dev = build_histograms(features_dev, vocabulary);
+% 
+%     histograms_train = build_histograms(d_features_train, vocabulary);
+%     classifiers = train_classifiers(histograms_train, labels_train, 'linear');
+%     [map, ap_scores] = evaluate(classifiers, histograms_dev, labels_dev, fnames_dev);
+%     [map_train, ap_scores_train] = evaluate(classifiers, histograms_train, labels_train, fnames_train);
+% 
+%     disp({"small vocab", vocab_size, train_sample_size, "map", map, "map_train", map_train});
+% %     disp(transpose(ap_scores));
+% 
+% end
 
-    histograms_train = build_histograms(d_features_train, vocabulary);
-    classifiers = train_classifiers(histograms_train, labels_train, 'linear');
-    [map, ap_scores] = evaluate(classifiers, histograms_dev, labels_dev, fnames_dev);
-    [map_train, ap_scores_train] = evaluate(classifiers, histograms_train, labels_train, fnames_train);
+clear
 
-    disp({"small vocab", vocab_size, train_sample_size, "map", map, "map_train", map_train});
-%     disp(transpose(ap_scores));
+%% Run demo with default config
+demo(200, 400, "RGB", "keypoints", 'linear');
 
+%% Run demo with optimized config (but computational expensive)
+demo(150, 800, "RGB", "dense", 'RBF');
+
+function demo(vocabulary_sample_size, vocabulary_size, colorspace, detector, kernel)
+
+tic;
+
+%% split training data into a set for building the vocabulary and a set for training the classifier
+[fnames_vocabulary, fnames_train, labels_train, fnames_test, labels_test] = split_data(vocabulary_sample_size);
+
+%% build vocabulary and train classifier
+[classifiers, vocabulary] = BoW(fnames_vocabulary, fnames_train, labels_train, vocabulary_size, colorspace, detector, kernel);
+
+%% calculate AP scores and MAP score
+features_test = extract_features(fnames_test, colorspace, detector);
+histograms_test = build_histograms(features_test, vocabulary);
+[map, ap_scores] = evaluate(classifiers, histograms_test, labels_test, fnames_test);
+
+%% display MAP results
+disp({"nr of vocabulary files", length(fnames_vocabulary), "nr of train files", length(fnames_train), "nr of test files", length(fnames_test)});
+disp({colorspace, detector, "vocablary size", vocabulary_size, kernel, "MAP", map, "end time", toc});
+disp(transpose(ap_scores));
+
+%% display error analysis results
+analyze_errors(classifiers, histograms_test, labels_test, fnames_test);
 end
+
+

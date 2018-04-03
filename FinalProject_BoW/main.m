@@ -3,8 +3,6 @@ close all
 clear
 warning('off','all');
 
-demo(10, 10, "RGB", "keypoints", 'linear');
-
 %% Run demo with default config
 demo(200, 400, "RGB", "keypoints", 'linear');
 
@@ -16,7 +14,7 @@ function demo(vocabulary_sample_size, vocabulary_size, colorspace, detector, ker
 tic;
 
 %% split training data into a set for building the vocabulary and a set for training the classifier
-[fnames_vocabulary, fnames_train, labels_train, fnames_test, labels_test] = split_data(vocabulary_sample_size, 0, 2);
+[fnames_vocabulary, fnames_train, labels_train, fnames_test, labels_test] = split_data(vocabulary_sample_size);
 
 %% build vocabulary and train classifier
 [classifiers, vocabulary] = BoW(fnames_vocabulary, fnames_train, labels_train, vocabulary_size, colorspace, detector, kernel);
