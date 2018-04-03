@@ -1,18 +1,19 @@
-function [map, ap_scores] = evaluate(classifiers, histograms, labels, fnames)
+function [MAP, AP_scores, ranked_lists] = evaluate(labels, scores, fnames)
 
-	ap_scores = zeros(length(classifiers), 1);
-	for k = 1 : length(classifiers)
-		classifier = classifiers{k};
-		[predicted_labels, scores] = predict(classifier, transpose(histograms));
-		[~, I] = sort(scores(:, 1));
-		%ranked_files = fnames(I);
+    ranked_lists = cell(size(scores));
+	AP_scores = zeros(size(scores, 2), 1);
+	for k = 1 : size(scores, 2)
+        kscores = scores(:, k);
+		[~, I] = sort(kscores);
+        
+		ranked_lists(:, k) = fnames(I);
 		
 		binary_labels = labels == k;
 		binary_labels_ranked = binary_labels(I);
 		ap = calculate_average_precision(binary_labels_ranked);
-		ap_scores(k) = ap; 
+		AP_scores(k) = ap; 
 	end
-	map = mean(ap_scores);
+	MAP = mean(AP_scores);
 end
 
 function ap = calculate_average_precision(binary_labels_ranked)

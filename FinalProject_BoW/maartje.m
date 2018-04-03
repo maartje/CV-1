@@ -6,7 +6,9 @@ keySet =   {
     'VOCABULARY SIZE', ...
     'KERNEL'};
 valueSet = {150, 250, 'keypoints', 'RGB', 400, 'linear'};
-config = containers.Map(keySet,valueSet);
+configx = containers.Map(keySet,valueSet);
+
+config = containers.Map(configx.keys, configx.values);
 
 MAP = 0.123456;
 AP_scores = [0.1234, 0.2345, 0.3456, 0.7892];

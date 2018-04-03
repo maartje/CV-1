@@ -2,7 +2,7 @@ function generate_html(config, MAP, AP_scores, ranked_lists)
     disp(config.keys);
     disp(config.values);
     disp(MAP);
-    disp(AP_scores);
+    disp(transpose(AP_scores));
 
     html = generate_html_string(config, MAP, AP_scores, ranked_lists);
     fname = sprintf('train_%d_vocab_%d_words_%d_%s_%s_%s.html', ...
@@ -49,13 +49,6 @@ function html = generate_html_string(config, MAP, AP_scores, ranked_lists)
     html = sprintf(template, student_header, settings_table, prediction_header, prediction_table);
 end
 
-
-
-%tbody = generate_prediction_table_body(airplanes, cars, faces, motorbikes);
-
-% thead = generate_prediction_table_head(AP_scores);
-
-
 function h2 = generate_student_header(stud_name1, stud_name2)
     h2 = sprintf('<h2>%s, %s</h2>', stud_name1, stud_name2);
 end
@@ -63,8 +56,8 @@ end
 function table = generate_settings_table(config)
     template = strjoin({
         '<table>', ...
-        '<tr><th>SIFT step size</th><td>%d px</td></tr>', ...
-        '<tr><th>SIFT block sizes</th><td>%d pixels</td></tr>', ...
+        '<tr><th>SIFT step size</th><td>%s px</td></tr>', ...
+        '<tr><th>SIFT block sizes</th><td>%s pixels</td></tr>', ...
         '<tr><th>SIFT method</th><td>%s-SIFT, %s</td></tr>', ...
         '<tr><th>Vocabulary size</th><td>%d words</td></tr>', ...
         '<tr><th>Vocabulary fraction</th><td>%.2f</td></tr>', ...
@@ -72,8 +65,13 @@ function table = generate_settings_table(config)
         '<tr><th>SVM kernel type</th><td>%s</td></tr>', ...
         '</table>'});
 
-    SIFT_step_size = 10;
-    SIFT_block_size = 3;
+    if strcmp(config('SIFT DETECTOR'), 'dense')
+        SIFT_step_size = '10';
+        SIFT_block_size = '3';
+    else
+        SIFT_step_size = '_ ';
+        SIFT_block_size = '_ ';
+    end
     SIFT_colorspace = config('SIFT COLORSPACE');
     SIFT_detector = config('SIFT DETECTOR');
     vocab_size = config('VOCABULARY SIZE');
