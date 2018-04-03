@@ -1,4 +1,5 @@
-function [classifiers, vocabulary] = BoW(fnames_vocabulary, fnames_train, labels_train, vocabulary_size, colorspace, detector, kernel)
+function [classifiers, vocabulary, features_vocabulary, features_train, histograms_train] = BoW( ...
+    fnames_vocabulary, fnames_train, labels_train, vocabulary_size, colorspace, detector, kernel)
 
 features_vocabulary = extract_features(fnames_vocabulary, colorspace, detector);
 vocabulary = build_vocabulary(features_vocabulary, vocabulary_size);

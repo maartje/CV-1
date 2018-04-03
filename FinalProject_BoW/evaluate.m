@@ -1,7 +1,7 @@
 function [MAP, AP_scores, ranked_lists] = evaluate(labels, scores, fnames)
 
     ranked_lists = cell(size(scores));
-	AP_scores = zeros(size(scores, 2), 1);
+	AP_scores = zeros(1, size(scores, 2));
 	for k = 1 : size(scores, 2)
         kscores = scores(:, k);
 		[~, I] = sort(kscores);
