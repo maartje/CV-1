@@ -4,33 +4,39 @@ clear
 warning('off','all');
 
 %% Run demo with default config
-demo(200, 400, "RGB", "keypoints", 'linear');
+demo(200, 200, 400, "RGB", "keypoints", 'linear');
 
 %% Run demo with optimized config (but computational expensive)
-demo(150, 800, "RGB", "dense", 'RBF');
+demo(150, 250, 1000, "RGB", "dense", 'RBF');
 
-function demo(vocabulary_sample_size, vocabulary_size, colorspace, detector, kernel)
-
-tic;
-
-%% split training data into a set for building the vocabulary and a set for training the classifier
-[fnames_vocabulary, fnames_train, labels_train, fnames_test, labels_test] = split_data(vocabulary_sample_size);
-
-%% build vocabulary and train classifier
-[classifiers, vocabulary] = BoW(fnames_vocabulary, fnames_train, labels_train, vocabulary_size, colorspace, detector, kernel);
-
-%% calculate AP scores and MAP score
-features_test = extract_features(fnames_test, colorspace, detector);
-histograms_test = build_histograms(features_test, vocabulary);
-[map, ap_scores] = evaluate(classifiers, histograms_test, labels_test, fnames_test);
-
-%% display MAP results
-disp({"nr of vocabulary files", length(fnames_vocabulary), "nr of train files", length(fnames_train), "nr of test files", length(fnames_test)});
-disp({colorspace, detector, "vocablary size", vocabulary_size, kernel, "MAP", map, "end time", toc});
-disp(transpose(ap_scores));
-
-%% display error analysis results
-analyze_errors(classifiers, histograms_test, labels_test, fnames_test);
+function demo(vocabulary_sample_size, train_sample_size, vocabulary_size, colorspace, detector, kernel)
+    tic;
+    config = configuration(vocabulary_sample_size, train_sample_size, vocabulary_size, colorspace, detector, kernel);
+    [fnames_vocabulary, fnames_train, labels_train, fnames_test, labels_test] = split_data( ...
+            config('VOCABULARY SAMPLE SIZE'), config('DEV SAMPLE SIZE'), config('TRAIN SAMPLE SIZE'));
+    [classifiers, vocabulary] = BoW(fnames_vocabulary, fnames_train, labels_train, ...
+        config('VOCABULARY SIZE'), config('SIFT COLORSPACE'), config('SIFT DETECTOR'), config('KERNEL'));
+    [predicted_labels, scores] = predict(fnames_test, classifiers, vocabulary, config('SIFT COLORSPACE'), config('SIFT DETECTOR'));
+    [MAP, AP_scores, ranked_lists] = evaluate(labels_test, scores, fnames_test);
+    generate_html(config, MAP, AP_scores, ranked_lists);
+    analyze_errors(labels_test, predicted_labels);
+    
+    disp({'duration', toc});
 end
 
 
+function config = configuration(vocabulary_sample_size, train_sample_size, vocabulary_size, colorspace, detector, kernel)
+    keySet =   {
+        'VOCABULARY SAMPLE SIZE', ...
+        'TRAIN SAMPLE SIZE', ...
+        'VOCABULARY SIZE', ...
+        'SIFT COLORSPACE', ...
+        'SIFT DETECTOR', ...
+        'KERNEL', ...
+        'DEV SAMPLE SIZE', ...
+        'CONTEXT'
+        };
+%     valueSet = {2, 2, 'keypoints', 'RGB', 20, 'linear', 10};
+    valueSet = {vocabulary_sample_size, train_sample_size, vocabulary_size, colorspace, detector, kernel, 0, 'test'};
+    config = containers.Map(keySet,valueSet);
+end

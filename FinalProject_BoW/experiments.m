@@ -11,8 +11,6 @@ vocabulary_sizes = [50, 100, 200, 800, 1600, 2000, 4000];
 colorspaces = ["RGB", "rgb", "opponent", "grey"];
 detectors = ["dense", "keypoints"];
 kernels = {'RBF', 'polynomial'}; % polynomial with order 3 by default
-vocabulary_sample_sizes = [1, 10, 25, 50, 100];
-train_sample_sizes = [1, 10, 25, 50, 100];
 
 %% EXPERIMENT: use default settings
 [fnames_vocabulary, fnames_train, labels_train, ~, ~, fnames_dev, labels_dev] = split_data( ...
@@ -71,10 +69,13 @@ for detector_idx = 1 : length(detectors)
     end
 end
 
-vocabulary_sizes = [10, 100, 500, 1000];
-for vocab_size_idx = 1 : length(vocabulary_sizes)
+%% EXPERIMENT: vary combinations of (vocabulary size, train set size) and combinations of (vocabulary size, vocabulary size set size) 
+alt_vocabulary_sizes = [10, 100, 500, 1000];
+vocabulary_sample_sizes = [1, 10, 25, 50, 100];
+train_sample_sizes = [1, 10, 25, 50, 100];
+for vocab_size_idx = 1 : length(alt_vocabulary_sizes)
     config_vocab_size = containers.Map(config.keys, config.values);
-    config_vocab_size('VOCABULARY SIZE') = vocabulary_sizes(vocab_size_idx);
+    config_vocab_size('VOCABULARY SIZE') = alt_vocabulary_sizes(vocab_size_idx);
 
     % default sample sizes of 150 and 150
     [classifiers, vocabulary, ~, ~, ~] = BoW(fnames_vocabulary, fnames_train, labels_train, ...
@@ -98,17 +99,25 @@ for vocab_size_idx = 1 : length(vocabulary_sizes)
         [MAP, AP_scores, ranked_lists] = evaluate(alt_labels_dev, scores_dev, alt_fnames_dev);
         generate_html(config_sample_train, MAP, AP_scores, ranked_lists);
 
+        [~, scores_train] = predict(alt_fnames_train, classifiers, vocabulary, config_sample_train('SIFT COLORSPACE'), config_sample_train('SIFT DETECTOR'));
+        [MAP_train, ~, ~] = evaluate(alt_labels_train, scores_train, alt_fnames_train);
+        disp({'VOCABULARY SIZE', config_sample_train('VOCABULARY SIZE'), 'TRAIN SAMPLE SIZE', config_sample_train('TRAIN SAMPLE SIZE'), 'MAP-train', MAP_train});
     end
     for vocab_sample_size_idx = 1 : length(vocabulary_sample_sizes)
         config_sample_vocab = containers.Map(config_vocab_size.keys, config_vocab_size.values);
         config_sample_vocab('VOCABULARY SAMPLE SIZE') = vocabulary_sample_sizes(vocab_sample_size_idx);
         [fnames_vocabulary, fnames_train, labels_train, ~, ~, fnames_dev, labels_dev] = split_data( ...
                 config_sample_vocab('VOCABULARY SAMPLE SIZE'), config_sample_vocab('DEV SAMPLE SIZE'), config_sample_vocab('TRAIN SAMPLE SIZE'));
-        [classifiers, vocabulary, features_vocabulary, features_train, histograms_train] = BoW(fnames_vocabulary, fnames_train, labels_train, ...
+        [classifiers, vocabulary] = BoW(fnames_vocabulary, fnames_train, labels_train, ...
             config_sample_vocab('VOCABULARY SIZE'), config_sample_vocab('SIFT COLORSPACE'), config_sample_vocab('SIFT DETECTOR'), config_sample_vocab('KERNEL'));
+        
         [predicted_labels_dev, scores_dev] = predict(fnames_dev, classifiers, vocabulary, config_sample_vocab('SIFT COLORSPACE'), config_sample_vocab('SIFT DETECTOR'));
         [MAP, AP_scores, ranked_lists] = evaluate(labels_dev, scores_dev, fnames_dev);
         generate_html(config_sample_vocab, MAP, AP_scores, ranked_lists);
+
+        [~, scores_train] = predict(fnames_train, classifiers, vocabulary, config_sample_vocab('SIFT COLORSPACE'), config_sample_vocab('SIFT DETECTOR'));
+        [MAP_train, ~, ~] = evaluate(labels_train, scores_train, fnames_train);
+        disp({'VOCABULARY SIZE', config_sample_vocab('VOCABULARY SIZE'), 'VOCABULARY SAMPLE SIZE', config_sample_vocab('VOCABULARY SAMPLE SIZE'), 'MAP-train', MAP_train});
     end
 
 end
