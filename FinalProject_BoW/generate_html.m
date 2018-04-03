@@ -1,29 +1,22 @@
-keySet =   {
-    'VOCABULARY SAMPLE SIZE', ...
-    'TRAIN SAMPLE SIZE', ...
-    'SIFT DETECTOR', ...
-    'SIFT COLORSPACE', ...
-    'VOCABULARY SIZE', ...
-    'KERNEL'};
-valueSet = {150, 250, 'keypoints', 'RGB', 400, 'linear'};
-config = containers.Map(keySet,valueSet);
+function generate_html(config, MAP, AP_scores, ranked_lists)
+    disp(config.keys);
+    disp(config.values);
+    disp(MAP);
+    disp(AP_scores);
 
-MAP = 0.123456;
-AP_scores = [0.1234, 0.2345, 0.3456, 0.7892];
+    html = generate_html_string(config, MAP, AP_scores, ranked_lists);
+    fname = sprintf('train_%d_vocab_%d_words_%d_%s_%s_%s.html', ...
+        config('TRAIN SAMPLE SIZE'), ...
+        config('VOCABULARY SAMPLE SIZE'), ...
+        config('VOCABULARY SIZE'), ...
+        config('SIFT DETECTOR'), ...
+        config('SIFT COLORSPACE'), ...
+        config('KERNEL'));
 
-nr_of_test_files = 2;
-nr_of_classes = 4;
-ranked_lists = cell(nr_of_test_files, nr_of_classes);
-ranked_lists(:,1) = {'a1', 'a2'};
-ranked_lists(:,2) = {'c1', 'c2'};
-ranked_lists(:,3) = {'f1', 'f2'};
-ranked_lists(:,4) = {'m1', 'm2'};
-
-html = generate_html_string(config, MAP, AP_scores, ranked_lists);
-
-fid = fopen('mj.html', 'w');
-fprintf(fid, '%s\n', html);
-fclose(fid);
+    fid = fopen(fullfile('HTMLFiles', fname), 'w');
+    fprintf(fid, '%s\n', html);
+    fclose(fid);
+end
 
 function html = generate_html_string(config, MAP, AP_scores, ranked_lists)
     student_header = generate_student_header('Maartje de Jonge', 'Lea van den Brink');

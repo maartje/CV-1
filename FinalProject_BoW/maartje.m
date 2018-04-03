@@ -1,35 +1,22 @@
-% histograms_train = build_histograms(features_train, vocabulary);
-% classifiers = train_classifiers(histograms_train, labels_train, 'linear');
-% normalized_features_vocabulary = cellfun(@(f) normc(f), features_vocabulary, 'UniformOutput', false);
-% vocabulary = build_vocabulary(features_vocabulary, 400, 1);
-%histograms_train = build_histograms(features_train, vocabulary);
-%classifiers = train_classifiers(histograms_train, labels_train, 'linear');
+keySet =   {
+    'VOCABULARY SAMPLE SIZE', ...
+    'TRAIN SAMPLE SIZE', ...
+    'SIFT DETECTOR', ...
+    'SIFT COLORSPACE', ...
+    'VOCABULARY SIZE', ...
+    'KERNEL'};
+valueSet = {150, 250, 'keypoints', 'RGB', 400, 'linear'};
+config = containers.Map(keySet,valueSet);
 
-% binary_labels_ranked = [1,1,0,1,0,0,1];
-% calculate_average_precision(binary_labels_ranked);
-% 
-% 
-% function ap = calculate_average_precision(binary_labels_ranked)
-%     labels = binary_labels_ranked(:);
-% 	n = length(labels); % 7
-% 	m = sum(labels);    % 4
-%     retrievals_at_rank = cumsum(transpose(labels));
-%     precision_at_rank = retrievals_at_rank ./ (1:n);
-%     ap = (1/m) * (precision_at_rank * labels);
-% end
+MAP = 0.123456;
+AP_scores = [0.1234, 0.2345, 0.3456, 0.7892];
 
-% % split training data into a set for building the vocabulary and a set for training the classifier
-% [xfnames_vocabulary, xfnames_train, xlabels_train, xfnames_test, xlabels_test, xfnames_dev, xlabels_dev] = split_data( ...
-%         3, 4);
-%  x = 1;
+nr_of_test_files = 2;
+nr_of_classes = 4;
+ranked_lists = cell(nr_of_test_files, nr_of_classes);
+ranked_lists(:,1) = {'a1', 'a2'};
+ranked_lists(:,2) = {'c1', 'c2'};
+ranked_lists(:,3) = {'f1', 'f2'};
+ranked_lists(:,4) = {'m1', 'm2'};
 
-load fisheriris
-inds = ~strcmp(species,'setosa');
-X = meas(inds,3:4);
-y = species(inds);
-kernels = {'linear', 'RBF', 'polynomial'};
-
-for kernel = kernels
-    SVMModel = fitcsvm(X,y, 'KernelFunction', kernel{1});
-    [l, ~] = predict(SVMModel, X);
-end
+generate_html(config, MAP, AP_scores, ranked_lists);
