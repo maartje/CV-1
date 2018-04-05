@@ -133,7 +133,6 @@ function config = default_config()
         'DEV SAMPLE SIZE', ...
         'CONTEXT'
         };
-%     valueSet = {2, 2, 'keypoints', 'RGB', 20, 'linear', 10};
     valueSet = {150, 150, 'keypoints', 'RGB', 400, 'linear', 100, 'validation'};
     config = containers.Map(keySet,valueSet);
 end

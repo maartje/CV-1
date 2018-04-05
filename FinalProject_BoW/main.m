@@ -7,7 +7,7 @@ warning('off','all');
 demo(200, 200, 400, "RGB", "keypoints", 'linear');
 
 %% Run demo with optimized config (but computational expensive)
-demo(150, 250, 1000, "RGB", "dense", 'RBF');
+demo(130, 270, 1000, "RGB", "dense", 'RBF');
 
 function demo(vocabulary_sample_size, train_sample_size, vocabulary_size, colorspace, detector, kernel)
     tic;
